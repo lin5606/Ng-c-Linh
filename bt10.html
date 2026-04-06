@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Danh sách sinh viên</title>
 
-    <!-- Thư viện đọc Excel -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
@@ -47,7 +47,7 @@
 </table>
 
 <script>
-// ===== CLASS =====
+
 class Student {
     constructor(fullName, studentId) {
         this.fullName = fullName;
@@ -81,7 +81,7 @@ class Student {
     }
 }
 
-// ===== ĐỌC FILE =====
+
 document.getElementById('fileInput').addEventListener('change', handleFile);
 
 function handleFile(e) {
@@ -101,7 +101,7 @@ function handleFile(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// ===== HIỂN THỊ =====
+
 function displayStudents(data) {
     let table = document.getElementById("studentTable");
     table.innerHTML = "";
