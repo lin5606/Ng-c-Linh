@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách sinh viên</title>
+
+    <!-- Thư viện đọc Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Danh sách sinh viên</h2>
+
+<input type="file" id="fileInput" />
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Họ tên</th>
+            <th>MSSV</th>
+            <th>Email</th>
+            <th>Khóa</th>
+            <th>Khoa</th>
+        </tr>
+    </thead>
+    <tbody id="studentTable"></tbody>
+</table>
+
+<script>
+// ===== CLASS =====
+class Student {
+    constructor(fullName, studentId) {
+        this.fullName = fullName;
+        this.studentId = studentId;
+        this.email = this.generateEmail();
+        this.course = this.getCourse();
+        this.department = this.getDepartment();
+    }
+
+    generateEmail() {
+        let parts = this.fullName.trim().toLowerCase().split(" ");
+        let firstName = parts.pop();
+        let initials = parts.map(p => p[0]).join("");
+
+        return `${firstName}${initials}.${this.studentId.toLowerCase()}@hvnh.edu.vn`;
+    }
+
+    getCourse() {
+        return "K" + this.studentId.substring(0, 2);
+    }
+
+    getDepartment() {
+        let code = this.studentId.charAt(2);
+
+        switch(code) {
+            case 'A': return "Khoa Công nghệ thông tin";
+            case 'B': return "Khoa Kinh tế";
+            case 'C': return "Khoa Tài chính";
+            default: return "Không xác định";
+        }
+    }
+}
+
+// ===== ĐỌC FILE =====
+document.getElementById('fileInput').addEventListener('change', handleFile);
+
+function handleFile(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+        displayStudents(jsonData);
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+// ===== HIỂN THỊ =====
+function displayStudents(data) {
+    let table = document.getElementById("studentTable");
+    table.innerHTML = "";
+
+    data.forEach(row => {
+        let student = new Student(row["Họ tên"], row["MSSV"]);
+
+        let tr = `
+            <tr>
+                <td>${student.fullName}</td>
+                <td>${student.studentId}</td>
+                <td>${student.email}</td>
+                <td>${student.course}</td>
+                <td>${student.department}</td>
+            </tr>
+        `;
+
+        table.innerHTML += tr;
+    });
+}
+</script>
+
+</body>
+</html>
